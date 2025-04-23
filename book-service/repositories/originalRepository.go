@@ -10,15 +10,17 @@ import (
 )
 
 type OriginalBookRepo struct {
-	collection *mongo.Collection
+	originalBooks *mongo.Collection
 }
 
 func CreateOriginalBookRepository(db *mongo.Database) *OriginalBookRepo {
-	return &OriginalBookRepo{collection: db.Collection("originalBooks")}
+	return &OriginalBookRepo{
+		originalBooks: db.Collection("originalBooks"),
+	}
 }
 
 func (r *OriginalBookRepo) GetOriginalBooks(ctx context.Context) ([]models.OriginalBookJson, any) {
-	cursor, error := r.collection.Find(ctx, bson.M{})
+	cursor, error := r.originalBooks.Find(ctx, bson.M{})
 
 	if error != nil {
 		return []models.OriginalBookJson{}, error

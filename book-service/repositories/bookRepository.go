@@ -14,17 +14,19 @@ import (
 )
 
 type BookRepo struct {
-	collection *mongo.Collection
+	books *mongo.Collection
 }
 
 func CreateBookRepository(db *mongo.Database) *BookRepo {
-	return &BookRepo{collection: db.Collection("books")}
+	return &BookRepo{
+		books: db.Collection("books"),
+	}
 }
 
 func (r *BookRepo) CreateBook(ctx context.Context, bookJson models.BookJson) (*models.BookJson, any) {
 	bookBson := bookController.ConvertToBookBsonToAdd(bookJson)
 
-	insertedResult, insertResultError := r.collection.InsertOne(ctx, bookBson)
+	insertedResult, insertResultError := r.books.InsertOne(ctx, bookBson)
 
 	if insertResultError != nil {
 		return nil, insertResultError
@@ -34,7 +36,7 @@ func (r *BookRepo) CreateBook(ctx context.Context, bookJson models.BookJson) (*m
 
 	var result models.BookBson
 
-	getResultError := r.collection.FindOne(ctx, bson.M{"_id": insertedId}).Decode(&result)
+	getResultError := r.books.FindOne(ctx, bson.M{"_id": insertedId}).Decode(&result)
 
 	if getResultError != nil {
 		return nil, getResultError
@@ -51,7 +53,7 @@ func (r *BookRepo) GetBooks(ctx context.Context, limit, skip int) ([]models.Book
 
 	fmt.Println(int64(limit), int64(skip))
 
-	cursor, error := r.collection.Find(ctx, bson.M{"isDeleted": false}, opts)
+	cursor, error := r.books.Find(ctx, bson.M{"isDeleted": false}, opts)
 
 	if error != nil {
 		return []models.BookJson{}, error
@@ -79,7 +81,7 @@ func (r *BookRepo) GetBook(ctx context.Context, bookId string) (*models.BookJson
 
 	var result models.BookBson
 
-	error := r.collection.FindOne(ctx, bson.M{"_id": bookIdInObjectId, "isDeleted": false}).Decode(&result)
+	error := r.books.FindOne(ctx, bson.M{"_id": bookIdInObjectId, "isDeleted": false}).Decode(&result)
 
 	if error != nil {
 		return nil, error
@@ -115,7 +117,7 @@ func (r *BookRepo) UpdateBook(ctx context.Context, bookJson models.BookJson) (bo
 		},
 	}
 
-	_, error := r.collection.UpdateOne(ctx, filterQuery, updateQuery)
+	_, error := r.books.UpdateOne(ctx, filterQuery, updateQuery)
 
 	if error != nil {
 		return false, error
@@ -135,7 +137,7 @@ func (r *BookRepo) DeleteBook(ctx context.Context, bookId string) (bool, any) {
 		},
 	}
 
-	_, error := r.collection.UpdateOne(ctx, filterQuery, updateQuery)
+	_, error := r.books.UpdateOne(ctx, filterQuery, updateQuery)
 
 	if error != nil {
 		return false, error
@@ -168,7 +170,7 @@ func (r *BookRepo) DeleteBooks(ctx context.Context, excludedBookIds []string) (b
 		},
 	}
 
-	_, error := r.collection.UpdateMany(ctx, filterQuery, updateQuery)
+	_, error := r.books.UpdateMany(ctx, filterQuery, updateQuery)
 
 	if error != nil {
 		return false, error
