@@ -1,0 +1,50 @@
+@baseURL=http://localhost:8080/api/v1
+@bookId=6808a621fe81b287b2101bcd
+# @bookId=68073a3d2bc75132418e4903
+
+### Add book
+POST {{baseURL}}/books
+Content-Type: application/json
+
+{
+    "title": "add new book 2",
+    "author": "new book author 1",
+    "genre": "new book genre 1",
+    "description": "description 1",
+    "isbn": "123123123123123",
+    "publisher": "publisher 1",
+    "publishedAt": "2025-04-22T05:32:33.392Z"
+}
+
+### Get books
+GET {{baseURL}}/books?page=1&limit=2
+Content-Type: application/json
+
+
+### Get book
+GET {{baseURL}}/books/{{bookId}}
+Content-Type: application/json
+
+
+
+### Update book
+PUT {{baseURL}}/books/{{bookId}}
+Content-Type: application/json
+
+{
+    "title": "update and update again",
+    "author": "new book author 1",
+    "genre": "new book genre 1",
+    "description": "description 1",
+    "isbn": "123123123123123",
+    "publisher": "publisher 1",
+    "publishedAt": "2025-04-22T05:32:33.392Z"
+}
+
+### Delete book
+DELETE {{baseURL}}/books/{{bookId}}
+Content-Type: application/json
+
+### Reset book list
+POST {{baseURL}}/books/reset
+Content-Type: application/json
