@@ -70,7 +70,7 @@ async function updateBook() {
 function deleteConfirmation() {
   $modal.open({
     title: $messages.general.deleteConfirmation(),
-    message: $messages.book.deleteMessage(bookId.value),
+    message: $messages.book.deleteMessage(book.value.bookId),
     cancelButtonText: $messages.button.cancel(),
     onConfirm: deleteBook
   });
